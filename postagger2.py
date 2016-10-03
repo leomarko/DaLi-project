@@ -8,34 +8,49 @@ import os
 # klassen TagPredictor med sina funktioner nedan
 class TagPredictor():
     def __init__(self, tupler):
-        #datasortering, gör lista med särdrag för varje ord,
-        #och lista med taggar som matchar den:
+
+
+        
         ordlista = [t[0] for t in tupler]
-        affix = self.skapa_affixlista(ordlista)
+        affix = self.make_featurelist(ordlista)
         taggar = [t[1] for t in tupler]
 
         #maskininlärning:
         examples = list(zip(affix,taggar))
         self.apmodel = train(5, examples)
 
-    def skapa_affixlista(self, ordlista):
-        #skapar vektorutrymme inkl. en vektor för varje affix
-        #returnerar lista med uppslagslistor
-        affixlista = []
-        for o in ordlista:
-            affix = ta_fram_affix(o)
-            affixlista.append(affix) #för varje ord läggs ett set affix till
-        return affixlista
+    def make_featurelist(self, sentences):
+"""
+Takes sentences but returns a list with one element per word, not sentence.
+Each element is a set of features for that word
+"""
+        flist = []
+        for s in sentences:
+            n = 0
+            while n < len(s):
+                prv = _listget(s, n-1) #returns None if none
+                nxt = _listget(s, n+1) #returns None if none
+                features = get_features(s[n], prevw=prv, nextw=nxt)
+                flist.append(features) #adds one set per word
+                n += 1
+        return flist
 
     def predict(self, ordlista):
         #förutser taggarna som varje ord borde få utifrån den tränade LogisticRegression-estimatorn
-        affixlista = self.skapa_affixlista(ordlista)
+        affixlista = self.make_featurelist(ordlista)
         tags = [self.apmodel.predict(a) for a in affixlista]
         return tags
 
 
 #----------------------------------------------------------------------------------------------------
 #globala funktioner
+def _listget(list_,index):
+    try:
+        return list_[index]
+    except(IndexError):
+        return None
+
+        
 def read_data(fil):
     #returnerar en lista med tupler
     tupler = []    
@@ -49,7 +64,7 @@ def read_data(fil):
     return tupler
 
 
-def get_features(prevw,word,nextw):
+def get_features(word, prevw=None, nextw=None):
 """
 adds all affixes up to 5 characters long, assuming the root is at least 2 characters
 prefixes marked with -p- after
