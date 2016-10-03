@@ -5,19 +5,18 @@ import pickle
 import random
 
 class AveragedPerceptron:
-
     def __init__(self):
         # Each feature is assignade a dict of weight values for each class
         # weights is a dict of those dicts
-        self.weights = {}
+        self.weights = defaultdict(lambda: defaultdict(int))
         self.classes = set()
         # The accumulated values, for the averaging. These will be keyed by
         # feature/clas tuples
-        self._totals = defaultdict(int)
+        self._totals = defaultdict(lambda: defaultdict(int))
         # The last time the feature was changed, for the averaging. Also
         # keyed by feature/clas tuples
         # (tstamps is short for timestamps)
-        self._tstamps = defaultdict(int)
+        self._tstamps = defaultdict(lambda: defaultdict(int))
         # Number of updates
         self.updates = 0
 
@@ -56,7 +55,7 @@ class AveragedPerceptron:
             self._totals[feat][clas] += self.weights[feat][clas] * (self.updates - self._tstamps[feat][clas]) 
             self._tstamps[feat][clas] = self.updates
             self.weights[feat][clas] += value
-
+            
         self.updates += 1
         if truth == guess:
             return None
