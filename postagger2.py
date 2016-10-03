@@ -1,43 +1,23 @@
 #importer
-from perceptron2 import train
+from perceptron2 import train as aptrain
 import os
 # -*- coding: utf-8 -*-
 
 
 #----------------------------------------------------------------------------------------
-# klassen TagPredictor med sina funktioner nedan
 class TagPredictor():
-    def __init__(self, tupler):
-
-
-        
-        ordlista = [t[0] for t in tupler]
-        affix = self.make_featurelist(ordlista)
-        taggar = [t[1] for t in tupler]
-
-        #maskininlärning:
-        examples = list(zip(affix,taggar))
-        self.apmodel = train(5, examples)
-
-    def make_featurelist(self, sentences):
-"""
-Takes sentences but returns a list with one element per word, not sentence.
-Each element is a set of features for that word
-"""
-        flist = []
+    def __init__(self, sentences, tags):
+        #the number total number of items in sentences must be equal to number of tags
+        features = list()
         for s in sentences:
-            n = 0
-            while n < len(s):
-                prv = _listget(s, n-1) #returns None if none
-                nxt = _listget(s, n+1) #returns None if none
-                features = get_features(s[n], prevw=prv, nextw=nxt)
-                flist.append(features) #adds one set per word
-                n += 1
-        return flist
+            f_list = make_featurelist(s)
+            features += f_list
+        assert len(features) == len(tags)
+        examples = list(zip(features,tags))
+        self.apmodel = aptrain(5, examples)
 
-    def predict(self, ordlista):
-        #förutser taggarna som varje ord borde få utifrån den tränade LogisticRegression-estimatorn
-        affixlista = self.make_featurelist(ordlista)
+    def predict(self, sentence):
+        f_list = self.make_featurelist(sentence)
         tags = [self.apmodel.predict(a) for a in affixlista]
         return tags
 
@@ -49,20 +29,36 @@ def _listget(list_,index):
         return list_[index]
     except(IndexError):
         return None
-
         
-def read_data(fil):
-    #returnerar en lista med tupler
-    tupler = []    
-    with open(fil, 'r') as f:
-        lines = [rad for rad in f if rad != '\n'] #ignorerar blankrader
+def read_data(file):
+    #returns a tuple with two lists, one of sentences, the other tags
+    sentences, tags = list()    
+    with open(file, 'r') as f:
         #ord och ordklass tas fram från varje rad, vilket är 2a respektive 4e elementet:
+        sentence = list()
         for line in lines:
+            if line == '\n':
+                if len(sentence) > 0:
+                    sentences.append(sentence)
+                sentence = list()
+                continue
             data = line.split()[1:4:2]
-            if len(data[0]) > 3: #orden måste vara minst 3 bokstäver långa
-                tupler.append((data[0],data[1])) #varje par av ord och ordklass bildar en tupel
-    return tupler
+            sentence.append(data[0])
+            tags.append(data[1])
+    return (sentences, tags)
 
+def make_featurelist(s):
+    #Takes a sentence and returns a list with one element per word.
+    #Each element is a set of features for that word
+        f_list = []
+        n = 0
+        while n < len(s):
+            prv = _listget(s, n-1) #returns None if none
+            nxt = _listget(s, n+1) #returns None if none
+            features = get_features(s[n], prevw=prv, nextw=nxt)
+            flist.append(features) #adds one set per word
+            n += 1
+        return f_list
 
 def get_features(word, prevw=None, nextw=None):
 """
@@ -77,12 +73,14 @@ returns a set of features
         if word:
             if len(word) < 3:
                 features.add(mark + word + '-w-')
+                return
             for i in range(1, len(word) - 1):
-                if i <= max_length:
-                    features.add(mark + word[-i:]) #suffix
-                    if mark == '':
-                        features.add(mark + word[:i] + '-p-') #prefix, only added for main word
-                             
+                if i > max_length:
+                    break
+                features.add(mark + word[-i:]) #suffix
+                if mark == '':
+                    features.add(mark + word[:i] + '-p-') #prefix, only added for main word
+                        
     features = set()
     _add_features(word, 5)
     _add_features(prevw, 3, '-prev-')
@@ -91,34 +89,33 @@ returns a set of features
 
 
 #-------------------------------------------------------------------------------------------
-#main-delen av programmet, testar algoritmen
-def main(traeningsfil, testfil):
-    #läser in träningsdatan och skapar TagPred.-objekt som har tränats baserat på den datan
-    traeningsdata = read_data(traeningsfil)
-    tagpredictor = TagPredictor(traeningsdata)
+#testing function
+def test(training_file, test_file):
+    sentences, tags = read_data(training_file)
+    tagpredictor = TagPredictor(sentences,tags)
 
-    #taggarna för testdatat förutsägs här
-    testdata = read_data(testfil)
-    ordlista = [tupel[0] for tupel in testdata]
-    taggar = tagpredictor.predict(ordlista)
-    facit_taggar = [tupel[1] for tupel in testdata]
+    #prediction
+    test_sentences, correct_tags = read_data(test_file)
+    guesslist = list()
+    for s in test_sentences:
+        guesses = tagpredictor.predict(s)
+        guesslist += guesses
+    assert len(guesslist) == len(correct_tags)
     
-
     #här stäms det av hur många taggar blev korrekta och skriver ut resultaten för det
-    korrekt = 0
-    fel = 0
-    for i in range(len(ordlista)):
-        if taggar[i] == facit_taggar[i]:
-            korrekt += 1
-        else:
-            fel += 1
-    procent_korrekt = round(korrekt / len(ordlista) * 100)
+    right = 0
+    for i in range(len(guesslist)):
+        if guesslist[i] == correct_tags[i]:
+            right += 1
+            
+    procent_right = round(right / len(guesslist) * 100, 3)
     
-    print("Antal korrekt taggade ord: " + str(korrekt) + "\n" +
-          "Antal feltaggade ord: " + str(fel) + "\n" +
-          "Andel korrekt taggade ord: " + str(procent_korrekt) + "%")
+    print("Amount correct: " + str(right) + "\n" +
+          "Amount incorrect: " + str(len(guesslist) - right) + "\n" +
+          "Accuracy: " + str(procent_korrekt) + "%")
 
-#testkörning (svenska)   
-traening = os.curdir+"\sv-universal-train.conll"
-test = os.curdir+"\sv-universal-test.conll"
-main(traening, test)
+#testkörning (svenska)
+if __name__ == '__main__':
+    training = os.curdir+"\sv-universal-train.conll"
+    testing = os.curdir+"\sv-universal-test.conll"
+    test(training, testing)
