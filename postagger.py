@@ -36,7 +36,7 @@ class TagPredictor():
 
 #----------------------------------------------------------------------------------------------------
 #globala funktioner
-def laes_data(fil):
+def read_data(fil):
     #returnerar en lista med tupler
     tupler = []    
     with open(fil, 'r') as f:
@@ -66,11 +66,11 @@ def ta_fram_affix(straeng):
 #main-delen av programmet, testar algoritmen
 def main(traeningsfil, testfil):
     #läser in träningsdatan och skapar TagPred.-objekt som har tränats baserat på den datan
-    traeningsdata = laes_data(traeningsfil)
+    traeningsdata = read_data(traeningsfil)
     tagpredictor = TagPredictor(traeningsdata)
 
     #taggarna för testdatat förutsägs här
-    testdata = read_data("/home/corpora/universal_treebanks_v1.0/sv/sv-universal-test.conll")
+    testdata = read_data(testfil)
     ordlista = [tupel[0] for tupel in testdata]
     taggar = tagpredictor.predict(ordlista)
     facit_taggar = [tupel[1] for tupel in testdata]
