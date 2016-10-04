@@ -17,8 +17,8 @@ class TagPredictor():
         self.apmodel = aptrain(5, examples)
 
     def predict(self, sentence):
-        f_list = self.make_featurelist(sentence)
-        tags = [self.apmodel.predict(a) for a in affixlista]
+        f_list = make_featurelist(sentence)
+        tags = [self.apmodel.predict(features) for features in f_list]
         return tags
 
 
@@ -32,11 +32,11 @@ def _listget(list_,index):
         
 def read_data(file):
     #returns a tuple with two lists, one of sentences, the other tags
-    sentences, tags = list()    
+    sentences, tags = list(), list()    
     with open(file, 'r') as f:
         #ord och ordklass tas fram från varje rad, vilket är 2a respektive 4e elementet:
         sentence = list()
-        for line in lines:
+        for line in f:
             if line == '\n':
                 if len(sentence) > 0:
                     sentences.append(sentence)
@@ -56,19 +56,19 @@ def make_featurelist(s):
             prv = _listget(s, n-1) #returns None if none
             nxt = _listget(s, n+1) #returns None if none
             features = get_features(s[n], prevw=prv, nextw=nxt)
-            flist.append(features) #adds one set per word
+            f_list.append(features) #adds one set per word
             n += 1
         return f_list
 
 def get_features(word, prevw=None, nextw=None):
-"""
-adds all affixes up to 5 characters long, assuming the root is at least 2 characters
-prefixes marked with -p- after
-adds suffixes up to 3 characters long from surrounding words, marked with -prev- and -next-
-if the word is 2 characters or less, the whole word is added as a feature (instead of affixes)
-this feature is marked -w- after
-returns a set of features
-"""
+    """
+    adds all affixes up to 5 characters long, assuming the root is at least 2 characters
+    prefixes marked with -p- after
+    adds suffixes up to 3 characters long from surrounding words, marked with -prev- and -next-
+    if the word is 2 characters or less, the whole word is added as a feature (instead of affixes)
+    this feature is marked -w- after
+    returns a set of features
+    """
     def _add_features(word, max_length, mark=''):
         if word:
             if len(word) < 3:
@@ -77,10 +77,10 @@ returns a set of features
             for i in range(1, len(word) - 1):
                 if i > max_length:
                     break
-                features.add(mark + word[-i:]) #suffix
                 if mark == '':
                     features.add(mark + word[:i] + '-p-') #prefix, only added for main word
-                        
+                features.add(mark + word[-i:]) #suffix
+                
     features = set()
     _add_features(word, 5)
     _add_features(prevw, 3, '-prev-')
@@ -112,7 +112,7 @@ def test(training_file, test_file):
     
     print("Amount correct: " + str(right) + "\n" +
           "Amount incorrect: " + str(len(guesslist) - right) + "\n" +
-          "Accuracy: " + str(procent_korrekt) + "%")
+          "Accuracy: " + str(procent_right) + "%")
 
 #testkörning (svenska)
 if __name__ == '__main__':
