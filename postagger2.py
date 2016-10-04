@@ -1,12 +1,17 @@
 #importer
-from perceptron2 import train as aptrain
+from perceptron2 import AveragedPerceptron, train as aptrain
 import os
+import pickle
 # -*- coding: utf-8 -*-
 
 
 #----------------------------------------------------------------------------------------
 class TagPredictor():
-    def __init__(self, sentences, tags):
+    def __init__(self, loadpath=None):
+        if loadpath:
+            self.apmodel = AveragedPerceptron(loadpath)
+            
+    def train(self, sentences, tags):
         #the number total number of items in sentences must be equal to number of tags
         features = list()
         for s in sentences:
@@ -20,6 +25,12 @@ class TagPredictor():
         f_list = make_featurelist(sentence)
         tags = [self.apmodel.predict(features) for features in f_list]
         return tags
+
+    def tokenize_tag(self, string):
+        sentence = string.split()
+        toanalyze = string.lower().split()
+        tags = self.predict(toanalyze)
+        return list(zip(sentence, tags))
 
 
 #----------------------------------------------------------------------------------------------------
@@ -92,7 +103,8 @@ def get_features(word, prevw=None, nextw=None):
 #testing function
 def test(training_file, test_file):
     sentences, tags = read_data(training_file)
-    tagpredictor = TagPredictor(sentences,tags)
+    tagpredictor = TagPredictor()
+    tagpredictor.train(sentences,tags)
 
     #prediction
     test_sentences, correct_tags = read_data(test_file)
@@ -114,8 +126,24 @@ def test(training_file, test_file):
           "Amount incorrect: " + str(len(guesslist) - right) + "\n" +
           "Accuracy: " + str(procent_right) + "%")
 
-#testkörning (svenska)
+#---------------------------------------------------------------------------------
+#training and saving a model to use with the tagger
+def save_apmodel(training_file,savedir):
+    sentences, tags = read_data(training_file)
+    tagpredictor = TagPredictor()
+    tagpredictor.train(sentences,tags)
+    tagpredictor.apmodel.save(savedir)
+
+
+#---------------------------------------------------------------------------------
+
 if __name__ == '__main__':
     training = os.curdir+"\sv-universal-train.conll"
     testing = os.curdir+"\sv-universal-test.conll"
-    test(training, testing)
+    savedir = 'apmodel.p'
+    mode = int(input('Train and test, or train and save? Input 1 or 2\n'))
+    if mode == 1:
+        test(training, testing)
+    elif mode == 2:
+        save_apmodel(training, savedir)
+        print('Saved')

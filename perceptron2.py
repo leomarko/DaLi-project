@@ -5,20 +5,23 @@ import pickle
 import random
 
 class AveragedPerceptron:
-    def __init__(self):
-        # Each feature is assignade a dict of weight values for each class
-        # weights is a dict of those dicts
-        self.weights = defaultdict(lambda: defaultdict(int))
-        self.classes = set()
-        # The accumulated values, for the averaging. These will be keyed by
-        # feature/clas tuples
-        self._totals = defaultdict(lambda: defaultdict(int))
-        # The last time the feature was changed, for the averaging. Also
-        # keyed by feature/clas tuples
-        # (tstamps is short for timestamps)
-        self._tstamps = defaultdict(lambda: defaultdict(int))
-        # Number of updates
-        self.updates = 0
+    def __init__(self, loadpath=None):
+        if loadpath: #if already trained, gets the weights, which is all that's needed to predict
+            self.load(loadpath)
+        else:
+            # Each feature is assignade a dict of weight values for each class
+            # weights is a dict of those dicts
+            self.weights = defaultdict(lambda: defaultdict(int))
+            self.classes = set()
+            # The accumulated values, for the averaging. These will be keyed by
+            # feature/clas tuples
+            self._totals = defaultdict(lambda: defaultdict(int))
+            # The last time the feature was changed, for the averaging. Also
+            # keyed by feature/clas tuples
+            # (tstamps is short for timestamps)
+            self._tstamps = defaultdict(lambda: defaultdict(int))
+            # Number of updates
+            self.updates = 0
 
     def get_scores(self,features):
         #returns a dictionary of the scores for classes for a collection of features
@@ -76,15 +79,15 @@ class AveragedPerceptron:
 
     def save(self, path):
         '''Save the pickled model weights.'''
-        return pickle.dump(dict(self.weights), open(path, 'w'))
+        return pickle.dump(dict(self.weights), open(path, 'wb'))
 
     def load(self, path):
         '''Load the pickled model weights.'''
-        self.weights = pickle.load(open(path))
+        self.weights = pickle.load(open(path, 'rb'))
         return None
 
 
-def train(nr_iter, examples):
+def train(nr_iter, examples, savedir=None):
     '''Return an averaged perceptron model trained on ``examples`` for
     ``nr_iter`` iterations.
     '''
@@ -96,4 +99,6 @@ def train(nr_iter, examples):
             if guess != class_:
                 model.update(class_, guess, features)
     model.average_weights()
+    if savedir:
+        model.save(savedir)
     return model
