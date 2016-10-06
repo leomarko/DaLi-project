@@ -15,7 +15,7 @@ class TagPredictor():
         if loadpath:
             self.apmodel = AveragedPerceptron(loadpath)
             
-    def train(self, sentences, tags):
+    def train(self, sentences, tags, nr_iters):
         #the number total number of items in sentences must be equal to number of tags
         features = list()
         for s in sentences:
@@ -23,7 +23,7 @@ class TagPredictor():
             features += f_list
         assert len(features) == len(tags)
         examples = list(zip(features,tags))
-        self.apmodel = aptrain(5, examples)
+        self.apmodel = aptrain(nr_iters, examples)
 
     def predict(self, sentence):
         f_list = make_featurelist(sentence)
@@ -105,10 +105,10 @@ def get_features(word, prevw=None, nextw=None):
 
 #-------------------------------------------------------------------------------------------
 #testing function
-def test(training_file, test_file):
+def test(training_file, test_file, nr_iters):
     sentences, tags = read_data(training_file)
     tagpredictor = TagPredictor()
-    tagpredictor.train(sentences,tags)
+    tagpredictor.train(sentences,tags, nr_iters)
 
     #prediction
     test_sentences, correct_tags = read_data(test_file)
@@ -132,22 +132,26 @@ def test(training_file, test_file):
 
 #---------------------------------------------------------------------------------
 #training and saving a model to use with the tagger
-def save_apmodel(training_file,savedir):
+def save_apmodel(training_file,nr_iters,savedir):
     sentences, tags = read_data(training_file)
     tagpredictor = TagPredictor()
-    tagpredictor.train(sentences,tags)
+    tagpredictor.train(sentences,tags,nr_iters)
     tagpredictor.apmodel.save(savedir)
 
 
 #---------------------------------------------------------------------------------
-
-if __name__ == '__main__':
+def main():
     training = os.curdir+"\sv-universal-train.conll"
     testing = os.curdir+"\sv-universal-test.conll"
     savedir = 'apmodel.p'
     mode = int(input('Train and test, or train and save? Input 1 or 2\n'))
+    nr_iters = int(input('Number of iterations for training:\n'))
     if mode == 1:
         test(training, testing)
     elif mode == 2:
+        savedir = 'apmodel_' + input('version name:\n') + '.p'
         save_apmodel(training, savedir)
         print('Saved')
+
+if __name__ == '__main__':
+    
