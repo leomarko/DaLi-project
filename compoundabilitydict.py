@@ -1,6 +1,6 @@
 import re
 
-class CompoundabilityDict:
+class CompableDict:
     def __init__(self,featurelist):
         self.prefixscores = dict()
         self.suffixscores = dict()
@@ -26,5 +26,16 @@ class CompoundabilityDict:
         print(self.prefixscores)
         print('suffixscores')
         print(self.suffixscores)
-                 
+
+def word_to_tag_dict(scores, apmodel):
+    tagscores = dict()
+    for word in scores.keys():
+        tag = apmodel.predict(word)
+        if tag in tagscores:
+            tagscores[tag] += scores[word]
+        else:
+            tagscores[tag] = scores[word]
+    return tagscores
+            
+        
     

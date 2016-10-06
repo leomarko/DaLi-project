@@ -17,8 +17,9 @@ def test_tagging(examplefile):
         print('\n')
 
 if __name__ == '__main__':
-    postagger = load_postagger('apmodel.p')
+    #postagger = load_postagger('apmodel.p')
     #postagger = load_postagger('old_apmodel.p')
+    postagger = load_postagger('apmodel_iter3.p')
     example = 'testexempel.txt'
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
