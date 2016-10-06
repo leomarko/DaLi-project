@@ -147,11 +147,11 @@ def main():
     mode = int(input('Train and test, or train and save? Input 1 or 2\n'))
     nr_iters = int(input('Number of iterations for training:\n'))
     if mode == 1:
-        test(training, testing)
+        test(training, testing, nr_iters)
     elif mode == 2:
         savedir = 'apmodel_' + input('version name:\n') + '.p'
-        save_apmodel(training, savedir)
+        save_apmodel(training, savedir, nr_iters)
         print('Saved')
 
 if __name__ == '__main__':
-    
+    main()
