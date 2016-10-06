@@ -1,8 +1,9 @@
 from postagger2 import TagPredictor
+#from postagger import TagPredictor
 import os
 
 def load_postagger(path):
-    postagger = TagPredictor(path)
+    postagger = TagPredictor(loadpath=path)
     return postagger
 
 def test_tagging(examplefile):
@@ -17,6 +18,7 @@ def test_tagging(examplefile):
 
 if __name__ == '__main__':
     postagger = load_postagger('apmodel.p')
+    #postagger = load_postagger('old_apmodel.p')
     example = 'testexempel.txt'
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':

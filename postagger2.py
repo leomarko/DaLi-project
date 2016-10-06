@@ -4,6 +4,10 @@ import os
 import pickle
 # -*- coding: utf-8 -*-
 
+"""
+notes:
+End or start of sentence should be added as a features
+"""
 
 #----------------------------------------------------------------------------------------
 class TagPredictor():

@@ -1,5 +1,5 @@
 #importer
-from perceptron2 import train
+from perceptron2 import train, AveragedPerceptron
 import os
 # -*- coding: utf-8 -*-
 
@@ -7,16 +7,21 @@ import os
 #----------------------------------------------------------------------------------------
 # klassen TagPredictor med sina funktioner nedan
 class TagPredictor():
-    def __init__(self, tupler):
-        #datasortering, gör lista med särdrag för varje ord,
-        #och lista med taggar som matchar den:
-        ordlista = [t[0] for t in tupler]
-        affix = self.skapa_affixlista(ordlista)
-        taggar = [t[1] for t in tupler]
+    def __init__(self, tupler=None, loadpath=None):
+        if loadpath:
+            self.apmodel = AveragedPerceptron(loadpath)
+        elif tupler:
+            #datasortering, gör lista med särdrag för varje ord,
+            #och lista med taggar som matchar den:
+            ordlista = [t[0] for t in tupler]
+            affix = self.skapa_affixlista(ordlista)
+            taggar = [t[1] for t in tupler]
 
-        #maskininlärning:
-        examples = list(zip(affix,taggar))
-        self.apmodel = train(5, examples)
+            #maskininlärning:
+            examples = list(zip(affix,taggar))
+            self.apmodel = train(5, examples)
+        else:
+            raise ValueError('Tuples or loadpath must be provided')
 
     def skapa_affixlista(self, ordlista):
         #skapar vektorutrymme inkl. en vektor för varje affix
@@ -32,6 +37,12 @@ class TagPredictor():
         affixlista = self.skapa_affixlista(ordlista)
         tags = [self.apmodel.predict(a) for a in affixlista]
         return tags
+
+    def tokenize_tag(self, string):
+        sentence = string.split()
+        toanalyze = string.lower().split()
+        tags = self.predict(toanalyze)
+        return list(zip(sentence, tags))
 
 
 #----------------------------------------------------------------------------------------------------
@@ -63,7 +74,12 @@ def ta_fram_affix(straeng):
 
 
 #-------------------------------------------------------------------------------------------
-#main-delen av programmet, testar algoritmen
+
+def save_apmodel(training_file,savedir):
+    data = read_data(training_file)
+    tagpredictor = TagPredictor(data)
+    tagpredictor.apmodel.save(savedir)
+
 def main(traeningsfil, testfil):
     #läser in träningsdatan och skapar TagPred.-objekt som har tränats baserat på den datan
     traeningsdata = read_data(traeningsfil)
@@ -90,7 +106,14 @@ def main(traeningsfil, testfil):
           "Antal feltaggade ord: " + str(fel) + "\n" +
           "Andel korrekt taggade ord: " + str(procent_korrekt) + "%")
 
-#testkörning (svenska)   
-traening = os.curdir+"\sv-universal-train.conll"
-test = os.curdir+"\sv-universal-test.conll"
-main(traening, test)
+#testkörning (svenska)
+if __name__ == '__main__':
+    training = os.curdir+"\sv-universal-train.conll"
+    testing = os.curdir+"\sv-universal-test.conll"
+    savedir = 'old_apmodel.p'
+    mode = int(input('Train and test, or train and save? Input 1 or 2\n'))
+    if mode == 1:
+        main(training, testing)
+    elif mode == 2:
+        save_apmodel(training, savedir)
+        print('Saved')
