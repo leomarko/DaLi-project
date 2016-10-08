@@ -1,4 +1,4 @@
-from postagger2 import TagPredictor
+from postagger3 import TagPredictor
 #from postagger import TagPredictor
 import os
 
@@ -19,7 +19,8 @@ def test_tagging(examplefile):
 if __name__ == '__main__':
     #postagger = load_postagger('apmodel.p')
     #postagger = load_postagger('old_apmodel.p')
-    postagger = load_postagger('apmodel_iter3.p')
+    #postagger = load_postagger('apmodel_iter3.p')
+    postagger = load_postagger('apmodel_double2iters.p')
     example = 'testexempel.txt'
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
