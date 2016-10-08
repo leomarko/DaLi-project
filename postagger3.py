@@ -1,6 +1,6 @@
 #importer
 from perceptron2 import AveragedPerceptron, train as aptrain
-from compoundabilitydict import CompableDict, word_to_tag_dict
+from compoundabilitydict import CompableDict #, word_to_tag_dict
 import os
 import pickle
 import re
@@ -8,7 +8,7 @@ import re
 
 """
 notes:
-End or start of sentence should be added as a features
+Fix unicode decoding problem
 """
 
 #----------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ def read_data(file):
     #returns a tuple with two lists, one of sentences, the other tags
     sentences, tags = list(), list()    
     with open(file, 'r') as f:
-        #ord och ordklass tas fram från varje rad, vilket är 2a respektive 4e elementet:
+        #word and POS-tag is the 2nd and 4th token of each line in this data
         sentence = list()
         for line in f:
             if line == '\n':
@@ -137,7 +137,6 @@ def test(training_file, test_file, nr_iters):
         guesslist += guesses
     assert len(guesslist) == len(correct_tags)
     
-    #här stäms det av hur många taggar blev korrekta och skriver ut resultaten för det
     right = 0
     for i in range(len(guesslist)):
         if guesslist[i] == correct_tags[i]:
@@ -160,8 +159,10 @@ def save_apmodel(training_file,savedir, nr_iters):
 
 #---------------------------------------------------------------------------------
 def main():
-    training = os.curdir+"\sv-universal-train.conll"
-    testing = os.curdir+"\sv-universal-test.conll"
+    #training = os.curdir+"\sv-universal-train.conll"
+    #testing = os.curdir+"\sv-universal-test.conll"
+    training = os.curdir+"\suc-train.conll"
+    testing = os.curdir+"\suc-dev.conll"
     savedir = 'apmodel.p'
     mode = int(input('Train and test, train and save, or check compundability?\n Input 1, 2 or 3\n'))
     nr_iters = int(input('Number of iterations for training:\n'))
@@ -171,17 +172,26 @@ def main():
         savedir = 'apmodel_' + input('version name:\n') + '.p'
         save_apmodel(training, savedir, nr_iters)
         print('Saved')
+        
+    #Not working yet:
     elif mode == 3:
         sentences, tags = read_data(training)
         tagpredictor = TagPredictor()
-        tagpredictor.train(sentences,tags,nr_iters)
-        features = tagpredictor.make_featurelist(sentences)
+        features = dict()
+        for s in sentences:
+            flist = tagpredictor.make_featuresets(s)
+            featurelist = list()
+            for fset in flist:
+                for f in fset:
+                    featurelist.append(f)
+            for f in featurelist:
+                if f in features:
+                    features[f] += 1
+                else:
+                    features[f] = 1
+        print(features)
         cpb = CompableDict(features)
         cpb.show()
-        print('prefixes:')
-        print(word_to_tag_dict(cpb.prefixscores))
-        print('suffixes:')
-        print(word_to_tag_dict(cpb.suffixscores))
         
 
 if __name__ == '__main__':
