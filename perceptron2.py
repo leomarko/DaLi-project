@@ -1,5 +1,13 @@
 #Simple Perceptron
 
+"""Possible additions/modifications:
+-history of predicted tags saved as features
+-delimiting possible tags to previously associated or open-word classes?
+(Depending on whether the word is known)
+
+
+"""
+
 from collections import defaultdict
 import pickle
 import random
@@ -9,7 +17,7 @@ class AveragedPerceptron:
         if loadpath: #if already trained, gets the weights, which is all that's needed to predict
             self.load(loadpath)
         else:
-            # Each feature is assignade a dict of weight values for each class
+            # Each feature is assigned a dict of weight values for each class
             # weights is a dict of those dicts
             self.weights = defaultdict(lambda: defaultdict(int))
             self.classes = set()
