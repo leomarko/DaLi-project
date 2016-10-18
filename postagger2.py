@@ -4,6 +4,7 @@ from perceptron2 import AveragedPerceptron, train as aptrain
 import os
 import pickle
 import codecs
+from collections import defaultdict
 
 
 """
@@ -118,17 +119,26 @@ def test(training_file, test_file, nr_iters):
         guesslist += guesses
     assert len(guesslist) == len(correct_tags)
     
-    #här stäms det av hur många taggar blev korrekta och skriver ut resultaten för det
+    #analyzing results
+    falsetags = defaultdict(lambda: defaultdict(int))
     right = 0
     for i in range(len(guesslist)):
         if guesslist[i] == correct_tags[i]:
             right += 1
+        else:
+            falsetags[correct_tags[i]][guesslist[i]] += 1
             
     procent_right = round(right / len(guesslist) * 100, 3)
     
     print("Amount correct: " + str(right) + "\n" +
           "Amount incorrect: " + str(len(guesslist) - right) + "\n" +
           "Accuracy: " + str(procent_right) + "%")
+    print('\n\nMispredictions:')
+    for tag in falsetags:
+        print('\nTag '+tag+' misidentified as:')
+        for p in falsetags[tag]:
+            print(str(p)+': '+str(falsetags[tag][p])) #str() is used in case label is None
+    
 
 #---------------------------------------------------------------------------------
 #training and saving a model to use with the tagger
@@ -150,7 +160,7 @@ def main():
         test(training, testing, nr_iters)
     elif mode == 2:
         savedir = 'apmodel_' + input('version name:\n') + '.p'
-        save_apmodel(training, savedir, nr_iters)
+        save_apmodel(training, nr_iters, savedir)
         print('Saved')
 
 if __name__ == '__main__':
