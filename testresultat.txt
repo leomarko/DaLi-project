@@ -1,0 +1,21 @@
+SV-UNIVERSAL
+
+Postagger med affix, huvudord och suffix från omgivande ord:
+	6 iterationer = 92.88 %	
+	5 iterationer = 92.81 %
+	4 iterationer = 92.53 %
+	3 iterationer = 92.31 %
+	2 iterationer = 91.82 %
+
+Postagger som även har slut och början på mening, 
+och tags från föregående ord. Tränar två gånger...
+	3*2 iterationer = 94.15 %
+	2*2 iterationer = 93.78 %
+	1*2 iterationer = 92.58 %
+
+
+SUC (SUC DEV)
+
+Postagger med affix, huvudord samt huvudord och suffix från omgivande ord:
+	1 iteration = 95.35%
+	3 iterationer = 96.1%
