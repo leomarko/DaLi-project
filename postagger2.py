@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
 #importer
 from perceptron2 import AveragedPerceptron, train as aptrain
 import os
 import pickle
-# -*- coding: utf-8 -*-
+import codecs
+
 
 """
 notes:
@@ -50,8 +52,7 @@ def _listget(list_,index):
 def read_data(file):
     #returns a tuple with two lists, one of sentences, the other tags
     sentences, tags = list(), list()    
-    with open(file, 'r') as f:
-        #ord och ordklass tas fram från varje rad, vilket är 2a respektive 4e elementet:
+    with codecs.open(file, 'r', encoding='utf-8') as f:
         sentence = list()
         for line in f:
             if line == '\n':
@@ -140,8 +141,8 @@ def save_apmodel(training_file,nr_iters,savedir):
 
 #---------------------------------------------------------------------------------
 def main():
-    training = "sv-universal-train.conll"
-    testing = "sv-universal-test.conll"
+    training = "suc-train.conll"
+    testing = "suc-dev.conll"
     savedir = 'apmodel.p'
     mode = int(input('Train and test, or train and save? Input 1 or 2\n'))
     nr_iters = int(input('Number of iterations for training:\n'))
