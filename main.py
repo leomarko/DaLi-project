@@ -1,5 +1,6 @@
 from postagger2 import TagPredictor
 from nltk.tokenize import sent_tokenize
+from compounddetector import CompoundDetector
 import codecs
 
 def load_postagger(path):
@@ -14,10 +15,17 @@ def test_tagging(examplefile):
         print(output[i])
         print('\n')
 
+def detect_compounds(sentence):
+    cpd = CompoundDetector()
+    tags = postagger.tokenize_tag(sentence)
+    print(cpd.detect(tags))
+        
+
 if __name__ == '__main__':
     postagger = load_postagger('apmodel_suc3iter.p')    
     #example = 'testexempel.txt'
     example = 'wikiartikel.txt'
+    detect_compounds('Jag köpte en jätte madrass')
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
         test_tagging(example)
