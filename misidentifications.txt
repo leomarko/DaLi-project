@@ -1,0 +1,193 @@
+Mispredictions:
+
+Tag PL misidentified as:
+PP: 49
+AB: 9
+JJ: 1
+
+Tag PS misidentified as:
+PP: 1
+
+Tag HD misidentified as:
+HP: 2
+
+Tag UO misidentified as:
+VB: 2
+NN: 5
+JJ: 8
+BASE_N: 6
+
+Tag HA misidentified as:
+HP: 16
+KN: 5
+IN: 1
+VB: 2
+PP: 1
+AB: 11
+
+Tag KN misidentified as:
+HP: 31
+HA: 1
+AB: 14
+SN: 1
+PP: 2
+
+Tag NN misidentified as:
+PM: 48
+PN: 3
+RG: 26
+BASE_N: 99
+VB: 13
+PC: 1
+AB: 2
+JJ: 5
+
+Tag VB misidentified as:
+PM: 3
+PN: 1
+NN: 6
+BASE_N: 2
+IMP_V: 2
+PP: 2
+PC: 11
+JJ: 7
+
+Tag JJ misidentified as:
+PS: 1
+DT: 2
+PC: 9
+RO: 2
+PM: 5
+PN: 6
+NN: 3
+BASE_N: 18
+VB: 5
+PP: 1
+IMP_V: 1
+AB: 58
+SN: 1
+
+Tag IE misidentified as:
+SN: 10
+
+Tag HP misidentified as:
+KN: 5
+
+Tag DT misidentified as:
+PN: 21
+RG: 1
+AB: 1
+
+Tag PC misidentified as:
+NN: 5
+PN: 1
+BASE_N: 9
+VB: 14
+AB: 11
+JJ: 7
+
+Tag SMS misidentified as:
+NN: 1
+RG: 1
+AB: 1
+BASE_N: 1
+
+Tag AB misidentified as:
+PL: 17
+DT: 1
+PN: 6
+MID: 1
+HA: 7
+UO: 2
+PM: 2
+NN: 5
+RG: 9
+KN: 3
+BASE_N: 6
+VB: 9
+PP: 42
+PC: 6
+JJ: 44
+SN: 2
+
+Tag RO misidentified as:
+RG: 2
+JJ: 5
+SN: 1
+BASE_N: 2
+
+Tag PM misidentified as:
+PL: 1
+PS: 1
+PN: 2
+MID: 2
+JJ: 1
+UO: 7
+NN: 25
+HA: 1
+BASE_N: 33
+IN: 1
+RG: 2
+VB: 1
+PP: 1
+AB: 8
+
+Tag PN misidentified as:
+DT: 36
+KN: 1
+BASE_N: 1
+RG: 3
+PP: 1
+AB: 3
+JJ: 8
+
+Tag RG misidentified as:
+PM: 2
+HP: 2
+DT: 11
+NN: 1
+BASE_N: 4
+MID: 1
+
+Tag BASE_N misidentified as:
+PL: 5
+UO: 3
+PM: 27
+PN: 3
+RG: 2
+NN: 87
+PS: 2
+IMP_V: 1
+VB: 15
+PC: 12
+JJ: 23
+
+Tag IN misidentified as:
+PM: 1
+RG: 1
+AB: 1
+
+Tag MAD misidentified as:
+MID: 1
+
+Tag PP misidentified as:
+PL: 3
+NN: 1
+AB: 11
+SN: 4
+KN: 2
+
+Tag IMP_V misidentified as:
+VB: 3
+RG: 1
+PM: 1
+BASE_N: 1
+
+Tag MID misidentified as:
+MAD: 6
+
+Tag SN misidentified as:
+IE: 11
+PP: 10
+AB: 6
+KN: 1
