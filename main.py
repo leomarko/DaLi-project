@@ -10,8 +10,8 @@ def test_tagging(examplefile):
     with codecs.open(examplefile,'r', encoding='utf-8') as file:
         sentences = sent_tokenize(file.read(),language='swedish')
     output = [postagger.tokenize_tag(s) for s in sentences]
-    for line in output:
-        print(line)
+    for i in range(40):
+        print(output[i])
         print('\n')
 
 if __name__ == '__main__':
