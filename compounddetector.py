@@ -1,3 +1,5 @@
+import itertools
+
 class CompoundDetector:
     def __init__(self, pospatterns='standard'):
         if pospatterns == 'standard':
@@ -37,6 +39,20 @@ class CompoundDetector:
         if len(compound_indices) == 0:
             return None
         return compound_indices
-            
+
+    def flexibledetect(self, tagsets):
+        compound_indices = list()
+        i = 0
+        while i < len(tagsets):
+            try:
+                for pattern in itertools.product(tagsets[i],tagsets[i+1]):
+                    if pattern[i] + '--' + pattern[i+1] in self.patterns:
+                        compound_indices.append(i)
+                i += 1
+            except(IndexError):
+                break
+        if len(compound_indices) == 0:
+            return None
+        return compound_indices
                 
         
