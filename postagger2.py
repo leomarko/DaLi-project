@@ -9,9 +9,8 @@ from collections import defaultdict
 
 """
 notes:
-- Add question mark
-- Capitalization or not of (only) non initial word
-- When testing, compile a list of the mistagged words and/or tags
+check reading
+make new tags for certain combinations of POS and form
 """
 
 #----------------------------------------------------------------------------------------
@@ -61,9 +60,27 @@ def read_data(file):
                     sentences.append(sentence)
                 sentence = list()
                 continue
-            data = line.split()[1:4:2]
-            sentence.append(data[0])
-            tags.append(data[1])
+            data = line.split()
+            
+            """abbreviations have irregular annotation and are not very relevant
+            they are the only words causing irregular feature-separation,
+            and are skipped (as they will be False) in the following"""
+            if data[3].isupper():
+                
+                """particular forms of POS that are relevant to this task are given
+                special tags instead of their POS tag"""
+                if data[3] == 'NN' and data[1].lower()[:-1] == data[2] and 'SMS' in data[5]:
+                    #"Sammansättning": Special compound form of noun, ending with '-' in the data
+                    data[3] = 'SMS'
+                elif data[3] == 'NN' and 'SIN|IND|NOM' in data[5]:
+                    #singular indicative nominative noun, usual form for first part of compounds
+                    data [3] = 'BASE_N'
+                elif data[3] == 'VB' and 'IMP' in data[5]:
+                    data[3] = 'IMP_V' #the same form often used in compounds
+                    
+                sentence.append(data[1]) #the word
+                tags.append(data[3]) #the tag
+                
     return (sentences, tags)
 
 def make_featurelist(s):
