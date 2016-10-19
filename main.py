@@ -17,7 +17,8 @@ def test_tagging(examplefile):
 
 def detect_compounds(sentence):
     cpd = CompoundDetector()
-    tags = postagger.tokenize_tag(sentence)
+    tags = [t[1] for t in postagger.tokenize_tag(sentence)]
+    print(tags)
     print(cpd.detect(tags))
         
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
     postagger = load_postagger('apmodel_suc3iter.p')    
     #example = 'testexempel.txt'
     example = 'wikiartikel.txt'
-    detect_compounds('Jag köpte en jätte madrass')
+    detect_compounds('Jag köpte en grävling madrass')
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
         test_tagging(example)
