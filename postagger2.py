@@ -5,6 +5,7 @@ import os
 import pickle
 import codecs
 from collections import defaultdict
+from nltk.tokenize import sent_tokenize, word_tokenize
 
 
 """
@@ -34,9 +35,9 @@ class TagPredictor():
         tags = [self.apmodel.predict(features) for features in f_list]
         return tags
 
-    def tokenize_tag(self, string):
-        sentence = string.split()
-        toanalyze = string.lower().split()
+    def tokenize_tag(self, sentence):
+        toanalyze = word_tokenize(sentence.lower(),language='swedish')
+        sentence = word_tokenize(sentence, language='swedish')
         tags = self.predict(toanalyze)
         return list(zip(sentence, tags))
 

@@ -1,27 +1,23 @@
-from postagger3 import TagPredictor
-#from postagger import TagPredictor
-import os
+from postagger2 import TagPredictor
+from nltk.tokenize import sent_tokenize
+import codecs
 
 def load_postagger(path):
     postagger = TagPredictor(loadpath=path)
     return postagger
 
 def test_tagging(examplefile):
-    output = []
-    with open(examplefile,'r') as file:
-        for line in file:
-            tagged = postagger.tokenize_tag(line.strip('\n'))
-            output.append(tagged)
+    with codecs.open(examplefile,'r', encoding='utf-8') as file:
+        sentences = sent_tokenize(file.read(),language='swedish')
+    output = [postagger.tokenize_tag(s) for s in sentences]
     for line in output:
         print(line)
         print('\n')
 
 if __name__ == '__main__':
-    #postagger = load_postagger('apmodel.p')
-    #postagger = load_postagger('old_apmodel.p')
-    #postagger = load_postagger('apmodel_iter3.p')
-    postagger = load_postagger('apmodel_double2iters.p')
-    example = 'testexempel.txt'
+    postagger = load_postagger('apmodel_suc3iter.p')    
+    #example = 'testexempel.txt'
+    example = 'wikiartikel.txt'
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
         test_tagging(example)
