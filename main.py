@@ -2,6 +2,7 @@ from postagger2 import TagPredictor
 from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
 import codecs
+import sys
 
 def load_postagger(path):
     postagger = TagPredictor(loadpath=path)
@@ -49,7 +50,7 @@ def compound_errors(filename):
                 break
             for w in line:
                 if w_index == detection:
-                    output.append('line '+str(l_index)+': '+
+                    output.append('line '+str(l_index+1)+': '+
                                   ' '.join([w for line in words for w in line][w_index:w_index+2]))
                     result=True
                     break
@@ -61,15 +62,23 @@ def compound_errors(filename):
 if __name__ == '__main__':
     postagger = load_postagger('apmodel_suc3iter.p')
     cpd = CompoundDetector()
+    with open(sys.argv[1][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
+        for error in compound_errors(sys.argv[1]):
+            outfile.write(error)
+            outfile.write('\n')
+
+
+    
     #example = 'testexempel.txt'
-    example = 'wikiartikel.txt'
-    detect_compounds('Jag köpte en grävling madrass')
-    flex_detect_compounds('Jag köpte en grävling madrass')
-    detect_compounds('Jag köpte en jätte madrass')
-    flex_detect_compounds('Jag köpte en jätte madrass')
-    ans = input('Testa '+example+' ? (y/n)')
-    if ans == 'y':
-        #test_tagging(example)
-        print(compound_errors(example))
+##    example = 'wikiartikel.txt'
+##    detect_compounds('Jag köpte en grävling madrass')
+##    flex_detect_compounds('Jag köpte en grävling madrass')
+##    detect_compounds('Jag köpte en jätte madrass')
+##    flex_detect_compounds('Jag köpte en jätte madrass')
+##    ans = input('Testa '+example+' ? (y/n)')
+##    if ans == 'y':
+##        #test_tagging(example)
+##        print(compound_errors(example))
+    
         
             
