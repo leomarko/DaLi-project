@@ -3,8 +3,8 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
 import codecs, sys, getopt
 
-def load_postagger(path):
-    postagger = TagPredictor(loadpath=path)
+def load_postagger(path, ambiguous, min_percent):
+    postagger = TagPredictor(loadpath=path,ambiguous=ambiguous, min_percent=min_percent)
     return postagger
 
 def test_tagging(examplefile):
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     ambiguous = True
     min_percent = 75
     try:
-        opts, args = getopts.getopts(sys.argv[1:],'hp:')
+        opts, args = getopt.getopt(sys.argv[1:],'hp:')
         for opt, arg in opts:
             if opt == 'h':
                 print('main.py text.txt -p <min_percent>')
@@ -73,10 +73,10 @@ if __name__ == '__main__':
                     min_percent = arg
     except getopt.GetoptError:
         print('getopterror')
-    postagger = load_postagger('apmodel_suc3iter.p',)
+    postagger = load_postagger('apmodel_suc3iter.p', ambiguous, min_percent)
     cpd = CompoundDetector()
-    with open(sys.argv[1][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
-        for error in compound_errors(*sys.argv[1:]):
+    with open(args[0][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
+        for error in compound_errors(args[0]):
             outfile.write(error)
             outfile.write('\n')
 
