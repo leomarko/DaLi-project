@@ -10,8 +10,8 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 
 """
 notes:
-check reading
-make new tags for certain combinations of POS and form
+check reading-done
+make new tags for certain combinations of POS and form-done
 """
 
 #----------------------------------------------------------------------------------------
@@ -30,15 +30,18 @@ class TagPredictor():
         examples = list(zip(features,tags))
         self.apmodel = aptrain(nr_iters, examples)
 
-    def predict(self, sentence):
+    def predict(self, sentence, ambiguous=False):
         f_list = make_featurelist(sentence)
-        tags = [self.apmodel.predict(features) for features in f_list]
+        if ambiguous:
+            tags = [self.apmodel.predict_alternatives(f) for f in f_list]
+        else:
+            tags = [self.apmodel.predict(features) for features in f_list]
         return tags
 
-    def tokenize_tag(self, sentence):
+    def tokenize_tag(self, sentence, ambiguous=False):
         toanalyze = word_tokenize(sentence.lower(),language='swedish')
         sentence = word_tokenize(sentence, language='swedish')
-        tags = self.predict(toanalyze)
+        tags = self.predict(toanalyze, ambiguous)
         return list(zip(sentence, tags))
 
 

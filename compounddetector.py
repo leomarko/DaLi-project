@@ -1,4 +1,5 @@
 import itertools
+from collections import OrderedDict
 
 class CompoundDetector:
     def __init__(self, pospatterns='standard'):
@@ -27,32 +28,46 @@ class CompoundDetector:
         self.tgp = tagpredictor
 
     def detect(self, tag_sequence):
+        #returns the indices of the first word of detected compounds (if any)
         compound_indices = list()
         i = 0
-        while i < len(tag_sequence):
-            try:
-                if tag_sequence[i] + '--' + tag_sequence[i+1] in self.patterns:
+        while i < len(tag_sequence) - 1:
+            #bigram patterns
+            if '--'.join(tag_sequence[i:i+2]) in self.patterns:
+                compound_indices.append(i)
+            #trigram patterns
+            elif i > 0:
+                if '--'.join(tag_sequence[i-1:i+2]) in self.patterns:
                     compound_indices.append(i)
-                i += 1
-            except(IndexError):
-                break
+            i += 1
+            
         if len(compound_indices) == 0:
             return None
-        return compound_indices
+        return sorted(list(i for i in compound_indices))
 
     def flexibledetect(self, tagsets):
-        compound_indices = list()
+        compound_indices = set()
         i = 0
-        while i < len(tagsets):
+        while i+1 < len(tagsets):
             try:
+                #bigram patterns
                 for pattern in itertools.product(tagsets[i],tagsets[i+1]):
-                    if pattern[i] + '--' + pattern[i+1] in self.patterns:
-                        compound_indices.append(i)
+                    if '--'.join(pattern) in self.patterns:
+                        compound_indices.add(i)
+                        i += 1
+                        if i+1 < len(tagsets):
+                            continue
+                #trigram patterns
+                if i > 0:
+                    for pattern in itertools.product(tagsets[i-1],tagsets[i],tagsets[i+1]):
+                        if '--'.join(pattern) in self.patterns:
+                            compound_indices.add(i)
                 i += 1
             except(IndexError):
-                break
+                print('error '+str(i)+' for list of length '+str(len(tagsets)))
+                i+=1
         if len(compound_indices) == 0:
             return None
-        return compound_indices
+        return sorted(list(i for i in compound_indices))
                 
         

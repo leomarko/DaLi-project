@@ -16,17 +16,24 @@ def test_tagging(examplefile):
         print('\n')
 
 def detect_compounds(sentence):
-    cpd = CompoundDetector()
     tags = [t[1] for t in postagger.tokenize_tag(sentence)]
-    print(tags)
     print(cpd.detect(tags))
-        
+
+def flex_detect_compounds(sentence):
+    tagsets = [t[1] for t in postagger.tokenize_tag(sentence, ambiguous=True)]
+    print(cpd.flexibledetect(tagsets))
+
+def output_compound_errors(file):
 
 if __name__ == '__main__':
-    postagger = load_postagger('apmodel_suc3iter.p')    
+    postagger = load_postagger('apmodel_suc3iter.p')
+    cpd = CompoundDetector()
     #example = 'testexempel.txt'
     example = 'wikiartikel.txt'
     detect_compounds('Jag köpte en grävling madrass')
+    flex_detect_compounds('Jag köpte en grävling madrass')
+    detect_compounds('Jag köpte en jätte madrass')
+    flex_detect_compounds('Jag köpte en jätte madrass')
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
         test_tagging(example)
