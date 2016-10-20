@@ -1,8 +1,7 @@
 from postagger2 import TagPredictor
 from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
-import codecs
-import sys
+import codecs, sys, getopt
 
 def load_postagger(path):
     postagger = TagPredictor(loadpath=path)
@@ -16,13 +15,11 @@ def test_tagging(examplefile):
         print(output[i])
         print('\n')
 
-def detect_compounds(sentence):
+def detect_compounds(sentence, flexible=False):
     tags = [t[1] for t in postagger.tokenize_tag(sentence)]
-    print(cpd.detect(tags))
-
-def flex_detect_compounds(sentence):
-    tagsets = [t[1] for t in postagger.tokenize_tag(sentence, ambiguous=True)]
-    print(cpd.flexibledetect(tagsets))
+    if flexible:
+        return cpd.flexibledetect(tagsets)
+    return cpd.detect(tags)
 
 def compound_errors(filename):
     with codecs.open(filename,'r', encoding='utf-8') as file:
@@ -31,7 +28,7 @@ def compound_errors(filename):
     sentences = sent_tokenize(raw,language='swedish')
     tagsets = list()
     for sentence in sentences:
-        tagsets += [t[1] for t in postagger.tokenize_tag(sentence, ambiguous=True)]
+        tagsets += [t[1] for t in postagger.tokenize_tag(sentence)]
 
     words = list()
     for line in raw.split('\n'):
@@ -60,10 +57,26 @@ def compound_errors(filename):
     return output    
 
 if __name__ == '__main__':
-    postagger = load_postagger('apmodel_suc3iter.p')
+    ambiguous = True
+    min_percent = 75
+    try:
+        opts, args = getopts.getopts(sys.argv[1:],'hp:')
+        for opt, arg in opts:
+            if opt == 'h':
+                print('main.py text.txt -p <min_percent>')
+                sys.exit()
+            elif opt == 'p':
+                assert isinstance(arg,int) and arg > 0
+                if arg > 99:
+                    ambiguous = False
+                else:
+                    min_percent = arg
+    except getopt.GetoptError:
+        print('getopterror')
+    postagger = load_postagger('apmodel_suc3iter.p',)
     cpd = CompoundDetector()
     with open(sys.argv[1][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
-        for error in compound_errors(sys.argv[1]):
+        for error in compound_errors(*sys.argv[1:]):
             outfile.write(error)
             outfile.write('\n')
 

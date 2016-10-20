@@ -16,9 +16,11 @@ make new tags for certain combinations of POS and form-done
 
 #----------------------------------------------------------------------------------------
 class TagPredictor():
-    def __init__(self, loadpath=None):
+    def __init__(self, loadpath=None, ambiguous=False, min_percent=75):
         if loadpath:
             self.apmodel = AveragedPerceptron(loadpath)
+        self.amb = ambiguous
+        self.min_p = min_percent
             
     def train(self, sentences, tags, nr_iters):
         #the number total number of items in sentences must be equal to number of tags
@@ -30,18 +32,18 @@ class TagPredictor():
         examples = list(zip(features,tags))
         self.apmodel = aptrain(nr_iters, examples)
 
-    def predict(self, sentence, ambiguous=False):
+    def predict(self, sentence):
         f_list = make_featurelist(sentence)
-        if ambiguous:
-            tags = [self.apmodel.predict_alternatives(f) for f in f_list]
+        if self.amb:
+            tags = [self.apmodel.predict_alternatives(f, min_percent=self.min_p) for f in f_list]
         else:
             tags = [self.apmodel.predict(features) for features in f_list]
         return tags
 
-    def tokenize_tag(self, sentence, ambiguous=False):
+    def tokenize_tag(self, sentence):
         toanalyze = word_tokenize(sentence.lower(),language='swedish')
         sentence = word_tokenize(sentence, language='swedish')
-        tags = self.predict(toanalyze, ambiguous)
+        tags = self.predict(toanalyze)
         return list(zip(sentence, tags))
 
 
