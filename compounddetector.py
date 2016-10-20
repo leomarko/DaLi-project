@@ -49,23 +49,19 @@ class CompoundDetector:
         compound_indices = set()
         i = 0
         while i+1 < len(tagsets):
-            try:
-                #bigram patterns
-                for pattern in itertools.product(tagsets[i],tagsets[i+1]):
+            detection = False
+            #bigram patterns
+            for pattern in itertools.product(tagsets[i],tagsets[i+1]):
+                if '--'.join(pattern) in self.patterns:
+                    compound_indices.add(i)
+                    detection = True
+            #trigram patterns
+            if i > 0 and not detection:
+                for pattern in itertools.product(tagsets[i-1],tagsets[i],tagsets[i+1]):
                     if '--'.join(pattern) in self.patterns:
                         compound_indices.add(i)
-                        i += 1
-                        if i+1 < len(tagsets):
-                            continue
-                #trigram patterns
-                if i > 0:
-                    for pattern in itertools.product(tagsets[i-1],tagsets[i],tagsets[i+1]):
-                        if '--'.join(pattern) in self.patterns:
-                            compound_indices.add(i)
-                i += 1
-            except(IndexError):
-                print('error '+str(i)+' for list of length '+str(len(tagsets)))
-                i+=1
+            i += 1
+            
         if len(compound_indices) == 0:
             return None
         return sorted(list(i for i in compound_indices))

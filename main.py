@@ -1,5 +1,5 @@
 from postagger2 import TagPredictor
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
 import codecs
 
@@ -23,7 +23,40 @@ def flex_detect_compounds(sentence):
     tagsets = [t[1] for t in postagger.tokenize_tag(sentence, ambiguous=True)]
     print(cpd.flexibledetect(tagsets))
 
-def output_compound_errors(file):
+def compound_errors(filename):
+    with codecs.open(filename,'r', encoding='utf-8') as file:
+        raw = file.read()
+        
+    sentences = sent_tokenize(raw,language='swedish')
+    tagsets = list()
+    for sentence in sentences:
+        tagsets += [t[1] for t in postagger.tokenize_tag(sentence, ambiguous=True)]
+
+    words = list()
+    for line in raw.split('\n'):
+        words.append(word_tokenize(line,language='swedish'))
+
+    del raw
+    assert len([w for line in words for w in line]) == len(tagsets)
+
+    output = list()
+    for detection in cpd.flexibledetect(tagsets):
+        l_index = 0
+        w_index = 0
+        result = False
+        for line in words:
+            if result:
+                break
+            for w in line:
+                if w_index == detection:
+                    output.append('line '+str(l_index)+': '+
+                                  ' '.join([w for line in words for w in line][w_index:w_index+2]))
+                    result=True
+                    break
+                w_index += 1
+            l_index += 1
+
+    return output    
 
 if __name__ == '__main__':
     postagger = load_postagger('apmodel_suc3iter.p')
@@ -36,6 +69,7 @@ if __name__ == '__main__':
     flex_detect_compounds('Jag köpte en jätte madrass')
     ans = input('Testa '+example+' ? (y/n)')
     if ans == 'y':
-        test_tagging(example)
+        #test_tagging(example)
+        print(compound_errors(example))
         
             
