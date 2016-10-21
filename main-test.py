@@ -61,45 +61,47 @@ if __name__ == '__main__':
     ambiguous = True
     min_percent = 75
     test = False
-    try:
-        opts, args = getopt.getopt(sys.argv[1:],'ht:p:')
-        for opt, arg in opts:
-            if opt == '-h':
-                print('main.py text.txt -t <testfile> -p <min_percent>')
-                sys.exit()
-            elif opt == '-t':
-                test = True
-                print(arg)
-                testfile = arg #correct answers
-            elif opt == '-p':
-                assert isinstance(arg,int) and arg > 0
-                if arg > 99:
-                    ambiguous = False
-                else:
-                    min_percent = arg
-    except getopt.GetoptError:
-        print('getopterror')
+##    try:
+##        opts, args = getopt.getopt(sys.argv[1:],'ht:p:')
+##        for opt, arg in opts:
+##            if opt == '-h':
+##                print('main.py text.txt -t <testfile> -p <min_percent>')
+##                sys.exit()
+##            elif opt == '-t':
+##                test = True
+##                print(arg)
+##                testfile = arg #correct answers
+##            elif opt == '-p':
+##                assert isinstance(arg,int) and arg > 0
+##                if arg > 99:
+##                    ambiguous = False
+##                else:
+##                    min_percent = arg
+##    except getopt.GetoptError:
+##        print('getopterror')
     postagger = load_postagger('apmodel_suc3iter.p', ambiguous, min_percent)
     cpd = CompoundDetector()
-    if not test:
-        with open(args[0][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
-            for error in compound_errors(args[0],returnstring=True):
-                outfile.write(error)
-                outfile.write('\n')
-    else:
-        with open(testfile, 'r', encoding='utf-8') as correct:
-            answers = [line.split() for line in correct]
-        for line in answers:
-            try:
-                line[0] = int(line[0])
-            except(ValueError):
-                line[0] = int(line[0][1:])
-        answers = list(map(tuple,answers))
-        detetions = compound_errors(args[0])
-        accurate = len([d for d in detections if d in answers])
-        missed = len([a for a in answers if a not in detections])
-        precision = round(accurate/len(detections), 3)
-        recall = round(accurate/(accurate+missed), 3)
-        f_score = round((2*precision*recall) / (precision + recall), 3)
-        print('Precision: {}, Recall: {}, F-score: {}'.format(precision,recall,f_score))        
-            
+##    if not test:
+##        with open(args[0][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
+##            for error in compound_errors(args[0],returnstring=True):
+##                outfile.write(error)
+##                outfile.write('\n')
+##    else:
+    args = ['srsk-text.txt']
+    testfile = 'srsk-facit.txt'
+    with codecs.open(testfile, 'r', encoding='utf-8') as correct:
+        answers = [line.split() for line in correct]
+    for line in answers:
+        try:
+            line[0] = int(line[0])
+        except(ValueError):
+            line[0] = int(line[0][1:])
+    answers = list(map(tuple,answers))
+    detections = compound_errors(args[0])
+    accurate = len([d for d in detections if d in answers])
+    missed = len([a for a in answers if a not in detections])
+    print('accurate: {}, missed: {}, total detections: {}'.format(accurate,missed,len(detections)))
+    precision = round(accurate/len(detections), 3)
+    recall = round(accurate/(accurate+missed), 3)
+    f_score = round((2*precision*recall) / (precision + recall), 3)
+    print('Precision: {}, Recall: {}, F-score: {}'.format(precision,recall,f_score))
