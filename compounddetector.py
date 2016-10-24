@@ -19,13 +19,9 @@ class CompoundDetector:
         for endtag in {'VB','IMP_V','JJ','AB','BASE_N','NN','PM'}:
             patterns.add('SMS--'+endtag)
             for prevtag in tagset - {'MAD','MID','PAD','KN','VB','IMP_V'}:
-                if prevtag not in {'MAD','MID','PAD','KN','VB','IMP_V'}:
                     patterns.add(prevtag+'--IMP_V--'+endtag)
                     
         return patterns
-    
-    def load_tagger(self, tagpredictor):
-        self.tgp = tagpredictor
 
     def detect(self, tag_sequence):
         #returns the indices of the first word of detected compounds (if any)
@@ -63,7 +59,7 @@ class CompoundDetector:
             i += 1
             
         if len(compound_indices) == 0:
-            return None
+            return list()
         return sorted(list(i for i in compound_indices))
                 
         
