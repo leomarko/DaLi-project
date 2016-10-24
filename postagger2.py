@@ -41,9 +41,8 @@ class TagPredictor():
         return tags
 
     def tokenize_tag(self, sentence):
-        toanalyze = word_tokenize(sentence.lower(),language='swedish')
         sentence = word_tokenize(sentence, language='swedish')
-        tags = self.predict(toanalyze)
+        tags = self.predict(sentence)
         return list(zip(sentence, tags))
 
 
@@ -75,7 +74,7 @@ def read_data(file):
                 
                 """particular forms of POS that are relevant to this task are given
                 special tags instead of their POS tag"""
-                if data[3] == 'NN' and data[1].lower()[:-1] == data[2] and 'SMS' in data[5]:
+                if data[3] == 'NN' and data[1].lower()[:-1] != data[2] and 'SMS' in data[5]:
                     #"Sammansättning": Special compound form of noun, ending with '-' in the data
                     data[3] = 'SMS'
                 elif data[3] == 'NN' and 'SIN|IND|NOM' in data[5]:
@@ -112,6 +111,7 @@ def get_features(word, prevw=None, nextw=None):
     """
     def _add_features(word, max_length, mark=''):
         if word:
+            word = word.lower()
             features.add(mark + word + '-w-')
             for i in range(1, len(word) - 1):
                 if i > max_length:
@@ -119,8 +119,10 @@ def get_features(word, prevw=None, nextw=None):
                 if mark == '':
                     features.add(mark + word[:i] + '-p-') #prefix, only added for main word
                 features.add(mark + word[-i:]) #suffix
-                
-    features = set()
+
+    features = set()            
+    if word[0].isupper() and prevw and not word.isupper(): #capital initial
+        features.add('-capital-')
     _add_features(word, 5)
     _add_features(prevw, 3, '-prev-')
     _add_features(nextw, 3, '-next-')
@@ -175,7 +177,7 @@ def save_apmodel(training_file,nr_iters,savedir):
 #---------------------------------------------------------------------------------
 def main():
     training = "suc-train.conll"
-    testing = "suc-dev.conll"
+    testing = "suc-test.conll"
     savedir = 'apmodel.p'
     mode = int(input('Train and test, or train and save? Input 1 or 2\n'))
     nr_iters = int(input('Number of iterations for training:\n'))
