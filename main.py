@@ -1,4 +1,4 @@
-from postagger2 import TagPredictor
+from postagger import TagPredictor
 from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
 from optparse import OptionParser
