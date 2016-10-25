@@ -2,7 +2,7 @@ from postagger import TagPredictor
 from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
 from optparse import OptionParser
-import codecs, sys, getopt
+import codecs
 
 def load_postagger(path, ambiguous, min_percent):
     postagger = TagPredictor(loadpath=path,ambiguous=ambiguous, min_percent=min_percent)
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                       help='set minimum percent of max score for POS-tags ("unambiguity level")')
     parser.add_option('-t', '--test', dest='test',
                       help='evaluate detections with testfile')
-    parser.add_option('--apmodel',dest='apmodel', default='apmodel_newest3iter.p',
+    parser.add_option('--apmodel',dest='apmodel', default='apmodel_suc3iter.p',
                       help='specify pickled averaged perceptron model to use')
     opts, args = parser.parse_args()
     ambiguous = True
