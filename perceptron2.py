@@ -50,12 +50,15 @@ class AveragedPerceptron:
             if score == max(scores.values()):
                 return class_
 
-    def predict_alternatives(self, features):
-        '''Returns a dictionary of the best label and the top labels if they are good enough.
-           Only used for output, not training.'''
+    def predict_alternatives(self, features, d=False, min_percent=75):
+        '''Returns the best label and the top labels if they are good enough.
+           d argument toggles whether to output the score for labels or just the labels.
+           Function only used for output, not training.'''
         scores = self.get_scores(features)
-        labels = {label: score for label, score in scores if score > max(scores)*0.5}
-        return labels
+        labels = {label: score for label, score in scores.items() if score > max(scores.values())*min_percent*0.01}
+        if d: 
+            return labels
+        return set(labels.keys())
 
     def update(self, truth, guess, features):
         '''Update the feature weights.'''

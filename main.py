@@ -64,7 +64,7 @@ if __name__ == '__main__':
                       help='set minimum percent of max score for POS-tags ("unambiguity level")')
     parser.add_option('-t', '--test', dest='test',
                       help='evaluate detections with testfile')
-    parser.add_option('--apmodel',dest='apmodel', default='apmodel_suc3iter.p',
+    parser.add_option('--apmodel',dest='apmodel', default='apmodel_newest3iter.p',
                       help='specify pickled averaged perceptron model to use')
     opts, args = parser.parse_args()
     ambiguous = True
@@ -75,7 +75,12 @@ if __name__ == '__main__':
     cpd = CompoundDetector()
     
     if not opts.test:
-        with open(args[0][:-4]+'_detections.txt', 'w', encoding='utf-8') as outfile:
+        path = opts.outfile
+        if path and path[:-4] != '.txt':
+            path += '.txt'
+        if not path:
+            path = args[0][:-4]+'_detections.txt'  
+        with open(path, 'w', encoding='utf-8') as outfile:
             for error in compound_errors(args[0],returnstring=True):
                 outfile.write(error)
                 outfile.write('\n')
@@ -92,6 +97,7 @@ if __name__ == '__main__':
         detections = compound_errors(args[0])
         accurate = len([d for d in detections if d in answers])
         missed = len([a for a in answers if a not in detections])
+        print('accurate: {}, missed: {}, total detections: {}'.format(accurate,missed,len(detections)))
         precision = round(accurate/len(detections), 3)
         recall = round(accurate/(accurate+missed), 3)
         f_score = round((2*precision*recall) / (precision + recall), 3)

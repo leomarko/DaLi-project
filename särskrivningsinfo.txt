@@ -1,5 +1,0 @@
-En annan möjlig förklaring till felaktig användning av särskrivningar är användandet av ordbehandlare med stavningskontroller 
-som ignorerar felaktiga särskrivningar eller till och med uppmuntrar dem, exempelvis MS Word 2010. 
-Andra faktorer som sannolikt bidrar till felaktig användning av särskrivningar är långa ord, särskilt med långa förled 
-(tunnelbanestation särskrivs oftare än tågvagn), och tillfälliga sammansättningar (tunnelbaneåkare särskrivs oftare än tunneltågförare). 
-Felaktiga särskrivningar av substantiv är vanligare än felaktiga särskrivningar av ord från andra ordklasser.

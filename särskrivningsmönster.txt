@@ -1,6 +1,0 @@
-"""särskrivning:
-(IND NOM N) N 
-(IND NOM N) A
-(SMS N [om annorlunda än grundform]) (V/A/N/PM)
-(Icke-V/KON) (IMP V) (V/A/N/PM)
-    

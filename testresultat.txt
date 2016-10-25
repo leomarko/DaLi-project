@@ -17,5 +17,9 @@ och tags från föregående ord. Tränar två gånger...
 SUC (SUC DEV)
 
 Postagger med affix, huvudord samt huvudord och suffix från omgivande ord:
-	1 iteration = 95.35%
-	3 iterationer = 96.1%
+	4 iterationer = 95.48 %
+	3 iterationer = 95.35 %		med faktiska testfilen: 95.79 %
+
+Postagger med suffix och helt ord från huvudord och två omgivande, 
+samt hela ordet en extra gång för huvudordet:
+	3 iterationer = 95.01 % 
