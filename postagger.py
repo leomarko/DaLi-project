@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #importer
-from perceptron2 import AveragedPerceptron, train as aptrain
+from perceptron import AveragedPerceptron, train as aptrain
 import os
 import pickle
 import codecs
