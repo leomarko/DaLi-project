@@ -17,8 +17,8 @@ PyPDF2 (only for samsacheck_pdf)
 Samsacheck features a part-of-speech tagger built on machine learning
 using a Perceptron algorithm. The tagger is customized for the task of 
 compound detection and built to work with the Stockholm-Umeå Corpus 
-(SUC). The accuracy of tagging is around 95.5%.  A pre-trained model 
-(apmodel_suc3iter.p) is freely available to use. Using the postagger.py is
+(SUC). The accuracy of tagging is around 95.8%.  A pre-trained model 
+(apmodel_suc3iter.p) is freely available to use. Using postagger.py is
 not recommended unless you have access to SUC, and it should be noted
 that it preprocesses the tags so they are no longer pure part-of-speech tags.
 
