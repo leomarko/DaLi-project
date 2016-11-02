@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#importer
 from perceptron import AveragedPerceptron, train as aptrain
 import os
 import pickle
@@ -8,14 +7,11 @@ from collections import defaultdict
 from nltk.tokenize import sent_tokenize, word_tokenize
 
 
-"""
-notes:
-check reading-done
-make new tags for certain combinations of POS and form-done
-"""
 
 #----------------------------------------------------------------------------------------
 class TagPredictor():
+    #when instanciating, set ambiguity of tagging.
+    #if no loadpath is given, train method needs to be called
     def __init__(self, loadpath=None, ambiguous=False, min_percent=75):
         if loadpath:
             self.apmodel = AveragedPerceptron(loadpath)
@@ -47,15 +43,17 @@ class TagPredictor():
 
 
 #----------------------------------------------------------------------------------------------------
-#globala funktioner
+#global functions
 def _listget(list_,index):
     try:
         return list_[index]
     except(IndexError):
         return None
         
-def read_data(file):
+def read_preprocess(file):
+    #designed for use with the Stockholm-Umeå Corpus
     #returns a tuple with two lists, one of sentences, the other tags
+    #replaces the POS-tag for certain specific forms
     sentences, tags = list(), list()    
     with codecs.open(file, 'r', encoding='utf-8') as f:
         sentence = list()
@@ -91,22 +89,23 @@ def read_data(file):
 def make_featurelist(s):
     #Takes a sentence and returns a list with one element per word.
     #Each element is a set of features for that word
-        f_list = []
-        n = 0
-        while n < len(s):
-            prv = _listget(s, n-1) #returns None if none
-            nxt = _listget(s, n+1) #returns None if none
-            features = get_features(s[n], prevw=prv, nextw=nxt)
-            f_list.append(features) #adds one set per word
-            n += 1
-        return f_list
+    f_list = []
+    n = 0
+    while n < len(s):
+        prv = _listget(s, n-1) #returns None if none
+        nxt = _listget(s, n+1) #returns None if none
+        features = get_features(s[n], prevw=prv, nextw=nxt)
+        f_list.append(features) #adds one set per word
+        n += 1
+    return f_list
 
 def get_features(word, prevw=None, nextw=None):
     """
     adds all affixes up to 5 characters long, assuming the root is at least 2 characters
     prefixes marked with -p- after
     adds suffixes up to 3 characters long from surrounding words, marked with -prev- and -next-
-    the whole word is added as a feature, marked -w- after
+    the whole word is added as a feature, marked -w- after,
+    if the word has a capital initial "-capital-" feature is added.
     returns a set of features
     """
     def _add_features(word, max_length, mark=''):
@@ -132,12 +131,12 @@ def get_features(word, prevw=None, nextw=None):
 #-------------------------------------------------------------------------------------------
 #testing function
 def test(training_file, test_file, nr_iters):
-    sentences, tags = read_data(training_file)
+    sentences, tags = read_preprocess(training_file)
     tagpredictor = TagPredictor()
     tagpredictor.train(sentences,tags, nr_iters)
 
     #prediction
-    test_sentences, correct_tags = read_data(test_file)
+    test_sentences, correct_tags = read_preprocess(test_file)
     guesslist = list()
     for s in test_sentences:
         guesses = tagpredictor.predict(s)
@@ -168,7 +167,7 @@ def test(training_file, test_file, nr_iters):
 #---------------------------------------------------------------------------------
 #training and saving a model to use with the tagger
 def save_apmodel(training_file,nr_iters,savedir):
-    sentences, tags = read_data(training_file)
+    sentences, tags = read_preprocess(training_file)
     tagpredictor = TagPredictor()
     tagpredictor.train(sentences,tags,nr_iters)
     tagpredictor.apmodel.save(savedir)

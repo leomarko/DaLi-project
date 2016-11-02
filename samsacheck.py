@@ -1,14 +1,18 @@
+#Compound error checker using part-of-speech tagging
+#and part-of-speech pattern detection.
+
 from postagger import TagPredictor
 from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
 from optparse import OptionParser
 import codecs
 
+#------------------------------------------Functions
 def load_postagger(path, ambiguous, min_percent):
     postagger = TagPredictor(loadpath=path,ambiguous=ambiguous, min_percent=min_percent)
     return postagger
 
-#single sentences
+#analyzing single sentences
 def detect_compounds(sentence, flexible=False):
     #returns the indices for the first words of detected compounds
     tags = [t[1] for t in postagger.tokenize_tag(sentence)]
@@ -16,7 +20,7 @@ def detect_compounds(sentence, flexible=False):
         return cpd.flexibledetect(tagsets)
     return cpd.detect(tags)
 
-#whole texts
+#analyzing whole texts
 def compound_errors(filename, returnstring=False):
     #returns a list of line numbers and detected compounds,
     #either as tuples with 3 elements or as a string (if returnstring=True)
@@ -57,6 +61,7 @@ def compound_errors(filename, returnstring=False):
 
 #-------------------------------------------Run
 if __name__ == '__main__':
+    #command line options:
     parser = OptionParser(usage='usage: %prog [options] textfile')
     parser.add_option('-f', '--filename', dest='outfile',
                       help='specify filename for output file')
@@ -73,7 +78,8 @@ if __name__ == '__main__':
 
     postagger = load_postagger(opts.apmodel, ambiguous, opts.percent)
     cpd = CompoundDetector()
-    
+
+    #Outputting results to text file
     if not opts.test:
         path = opts.outfile
         if path and path[:-4] != '.txt':
@@ -84,7 +90,8 @@ if __name__ == '__main__':
             for error in compound_errors(args[0],returnstring=True):
                 outfile.write(error)
                 outfile.write('\n')
-                
+
+    #Testing detection precision and recall
     else:
         with open(opts.test, 'r', encoding='utf-8') as correct:
             answers = [line.split() for line in correct]

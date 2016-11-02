@@ -1,13 +1,5 @@
 #Simple Perceptron
 
-"""Possible additions/modifications:
--history of predicted tags saved as features
--delimiting possible tags to previously associated or open-word classes?
-(Depending on whether the word is known)
-
-
-"""
-
 from collections import defaultdict
 import pickle
 import random
