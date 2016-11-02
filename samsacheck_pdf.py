@@ -1,3 +1,8 @@
+#Compound error checker using part-of-speech tagging
+#and part-of-speech pattern detection
+#Input in pdf-form.
+#Early development version, unstable results
+
 from postagger import TagPredictor
 from nltk.tokenize import sent_tokenize, word_tokenize
 from compounddetector import CompoundDetector
@@ -22,14 +27,10 @@ def compound_errors(filename, returnstring=False):
             sentences = sent_tokenize(text,language='swedish')
             tagsets = list()
             for sentence in sentences:
-                #print(sentence)
-                #print('NEWSENTENCE')
                 tagsets += [t[1] for t in postagger.tokenize_tag(sentence)]
 
             words = list()
             for line in text.split('\n'):
-                #print(line)
-                #print('NEWLINE')
                 words.append(word_tokenize(line,language='swedish'))
 
             assert len([w for line in words for w in line]) == len(tagsets)
